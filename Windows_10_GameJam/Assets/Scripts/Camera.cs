@@ -7,7 +7,6 @@ public class Camera : MonoBehaviour {
     private Vector3 velocity = Vector3.zero;
     private Player player;
 
-	// Use this for initialization
 	void Start () {
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         player = playerObject.GetComponent<Player>();
@@ -16,7 +15,7 @@ public class Camera : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         Vector3 targetPosition = transform.position;
-        targetPosition.x = player.transform.position.x;
+        targetPosition.x = player.transform.position.x + 2f;
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
 	}
 }
