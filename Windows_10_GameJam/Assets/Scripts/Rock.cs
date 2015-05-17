@@ -12,4 +12,8 @@ public class Rock : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
         player.hitRock();
     }
+
+    void OnTriggerStay2D(Collider2D other) {
+        player.slow();
+    }
 }

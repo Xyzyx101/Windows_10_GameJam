@@ -57,8 +57,12 @@ public class Player : MonoBehaviour {
     }
 
     public void hitRock() {
-        rb.AddForce(new Vector2(5f, 35f), ForceMode2D.Impulse);
+        //rb.AddForce(new Vector2(5f, 35f), ForceMode2D.Impulse);
     }
+
+    public void slow() {
+        rb.velocity = rb.velocity * 0.9f;
+    } 
 
     public void activateControl() {
         activeControl = true;
