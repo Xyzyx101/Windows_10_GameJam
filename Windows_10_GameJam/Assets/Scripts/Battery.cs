@@ -15,15 +15,20 @@ public class Battery : MonoBehaviour {
         rb = gameObject.GetComponent<Rigidbody2D>();
     }
 
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update() {
         bounceTimer -= Time.deltaTime;
         Debug.Log(bounceTimer);
+        Debug.Log(transform.position.y);
         if (bounceTimer < 0) {
+            rb.isKinematic = false;
             bounceTimer = bounceTime;
             rb.AddForce(new Vector2(0f, bounceHeight), ForceMode2D.Impulse);
+        } else if (transform.position.y < 0) {
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            rb.isKinematic = true;
         }
-	}
+    }
 
     void OnCollisionEnter2D(Collision2D collision) {
         player.pickupBattery();
