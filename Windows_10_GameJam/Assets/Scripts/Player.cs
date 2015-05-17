@@ -7,32 +7,39 @@ public class Player : MonoBehaviour {
     public float power;
 
     private Rigidbody2D rb;
+    private GameManager gm;
     private bool isStanding = true;
     private float maxJumpTime = 0.7f;
-    private float jumpTimer;
-    
+    private float jumpTimer = 0;
+    public bool activeControl;
 
-    // Use this for initialization
     void Start() {
+        GameObject gmObj = GameObject.FindGameObjectWithTag("GameManager");
+        gm = gmObj.GetComponent<GameManager>();
         rb = gameObject.GetComponent<Rigidbody2D>();
         isMoving = false;
-
-        //FIXME
-        StartMoving(30f);
     }
 
     void Update() {
+        if (!activeControl) {
+            return;
+        }
         Jump();
+        if (rb.velocity.magnitude < 2f) {
+            gm.meterMode();
+        }
     }
 
     void Jump() {
         jumpTimer -= Time.deltaTime;
-        if (isStanding && Input.anyKey) {
+        if (isStanding && gm.GetButtonPressedOnce()) {
+            Debug.Log("Jumping");
             jumpTimer = maxJumpTime;
             rb.AddForce(new Vector2(0f, 30f), ForceMode2D.Impulse);
             isStanding = false;
         } else if (jumpTimer > 0f && Input.anyKey) {
             rb.AddForce(new Vector2(0f, 4000f * Time.deltaTime), ForceMode2D.Force);
+            isMoving = false;
         }
     }
 
@@ -40,8 +47,9 @@ public class Player : MonoBehaviour {
         isStanding = true;
     }
 
-    void StartMoving(float speed) {
-        rb.AddForce(new Vector2(speed, 0f), ForceMode2D.Impulse);
+    public void StartMoving(float speed) {
+        isMoving = true;
+        rb.AddForce(new Vector2(speed * 40f, 0f), ForceMode2D.Impulse);
     }
 
     public void pickupBattery() {
@@ -50,5 +58,12 @@ public class Player : MonoBehaviour {
 
     public void hitRock() {
         rb.AddForce(new Vector2(5f, 35f), ForceMode2D.Impulse);
+    }
+
+    public void activateControl() {
+        activeControl = true;
+    }
+    public void deactivateControl() {
+        activeControl = false;
     }
 }

@@ -18,11 +18,9 @@ public class Battery : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         bounceTimer -= Time.deltaTime;
-        Debug.Log(bounceTimer);
-        Debug.Log(transform.position.y);
         if (bounceTimer < 0) {
             rb.isKinematic = false;
-            bounceTimer = bounceTime;
+            bounceTimer = bounceTime * Random.value;
             rb.AddForce(new Vector2(0f, bounceHeight), ForceMode2D.Impulse);
         } else if (transform.position.y < 0) {
             transform.position = new Vector3(transform.position.x, 0, transform.position.z);
