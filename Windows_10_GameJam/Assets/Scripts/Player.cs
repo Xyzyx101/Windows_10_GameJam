@@ -8,6 +8,7 @@ public class Player : MonoBehaviour {
 
     private Rigidbody2D rb;
     private GameManager gm;
+    private Animator animator;
     private bool isStanding = true;
     private float maxJumpTime = 0.7f;
     private float jumpTimer = 0;
@@ -16,6 +17,7 @@ public class Player : MonoBehaviour {
     void Start() {
         GameObject gmObj = GameObject.FindGameObjectWithTag("GameManager");
         gm = gmObj.GetComponent<GameManager>();
+        animator = GetComponentInChildren<Animator>();
         rb = gameObject.GetComponent<Rigidbody2D>();
         isMoving = false;
     }
@@ -33,6 +35,7 @@ public class Player : MonoBehaviour {
     void Jump() {
         jumpTimer -= Time.deltaTime;
         if (isStanding && gm.GetButtonPressedOnce()) {
+            animator.SetBool("Jump", true);
             Debug.Log("Jumping");
             jumpTimer = maxJumpTime;
             rb.AddForce(new Vector2(0f, 30f), ForceMode2D.Impulse);
