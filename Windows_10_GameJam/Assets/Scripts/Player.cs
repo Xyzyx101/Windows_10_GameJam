@@ -5,6 +5,7 @@ public class Player : MonoBehaviour {
     //public float speed;
     public bool isMoving;
     public float power;
+    public bool activeControl;
 
     private Rigidbody2D rb;
     private GameManager gm;
@@ -12,7 +13,7 @@ public class Player : MonoBehaviour {
     private bool isStanding = true;
     private float maxJumpTime = 0.7f;
     private float jumpTimer = 0;
-    public bool activeControl;
+
 
     void Start() {
         GameObject gmObj = GameObject.FindGameObjectWithTag("GameManager");
@@ -27,15 +28,11 @@ public class Player : MonoBehaviour {
             return;
         }
         Jump();
-        if (rb.velocity.magnitude < 2f) {
-            gm.meterMode();
-        }
-    }
 
-    void Jump() {
         jumpTimer -= Time.deltaTime;
         if (isStanding && gm.GetButtonPressedOnce()) {
-            animator.SetBool("Jump", true);
+            animator.speed = 1f;
+            animator.SetTrigger("Jump");
             Debug.Log("Jumping");
             jumpTimer = maxJumpTime;
             rb.AddForce(new Vector2(0f, 30f), ForceMode2D.Impulse);
@@ -43,7 +40,20 @@ public class Player : MonoBehaviour {
         } else if (jumpTimer > 0f && Input.anyKey) {
             rb.AddForce(new Vector2(0f, 4000f * Time.deltaTime), ForceMode2D.Force);
             isMoving = false;
+        } else {
+            if (isStanding) {
+                animator.SetFloat("RunSpeed", rb.velocity.x);
+                animator.speed = rb.velocity.x;
+            }
+            if (rb.velocity.magnitude < 2f) {
+                animator.SetFloat("RunSpeed", 0);
+                gm.meterMode();
+            }
         }
+    }
+
+    void Jump() {
+
     }
 
     void OnCollisionEnter2D(Collision2D collision) {
@@ -60,12 +70,12 @@ public class Player : MonoBehaviour {
     }
 
     public void hitRock() {
-        //rb.AddForce(new Vector2(5f, 35f), ForceMode2D.Impulse);
+        animator.SetTrigger("Hit");
     }
 
     public void slow() {
         rb.velocity = rb.velocity * 0.9f;
-    } 
+    }
 
     public void activateControl() {
         activeControl = true;
