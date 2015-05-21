@@ -5,19 +5,25 @@ public class PowerMeter : MonoBehaviour {
     private Player player;
     private SpriteRenderer spriteRender;
     private GameManager gm;
+    private Vector3 originalPosition;
     private bool activeControl;
     private bool goingUp;
     public float meterPosition;
     private float lerpTimer;
     private float lerpTime;
 
-    void Start() {
+
+    void Awake() {
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         player = playerObject.GetComponent<Player>();
         GameObject gmObj = GameObject.FindGameObjectWithTag("GameManager");
         gm = gmObj.GetComponent<GameManager>();
         spriteRender = GetComponent<SpriteRenderer>();
-        lerpTime = 2f;
+        originalPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
+    }
+
+    void Start() {
+        lerpTime = 1.5f;
         lerpTimer = 0f;
         goingUp = true;
     }
@@ -32,13 +38,20 @@ public class PowerMeter : MonoBehaviour {
             lerpTimer -= Time.deltaTime;
         }
         if (lerpTimer > lerpTime) {
-            lerpTime = 1f;
+            lerpTimer = lerpTime;
             goingUp = false;
         } else if (lerpTimer <= 0f) {
             goingUp = true;
         }
-        meterPosition = EaseInQuad(0, 1, lerpTimer / lerpTime, lerpTime);
+        meterPosition = EaseInQuad(lerpTimer / lerpTime, lerpTime);
+
+        /* meterPosition is a number from 0 to 1 that is used to set player speed
+         * The following three line are just cosmetic and can be replaced with a
+         * nicer looking meter */
         spriteRender.color = Color.Lerp(Color.red, Color.green, meterPosition);
+        transform.localScale = new Vector3(Mathf.Max(meterPosition, 0.25f), Mathf.Max(meterPosition, 0.25f), 1f);
+        transform.localPosition = new Vector3(originalPosition.x + 0.2f * meterPosition, originalPosition.y, originalPosition.z);
+
         if ( gm.GetButtonPressedOnce() ) {
             player.StartMoving(meterPosition);
             gm.playerMode();
@@ -46,18 +59,19 @@ public class PowerMeter : MonoBehaviour {
     }
 
     public void activateControl() {
+        spriteRender.enabled = true;
         activeControl = true;
         goingUp = true;
         meterPosition = 0;
     }
 
     public void deactivateControl() {
+        spriteRender.enabled = false;
         activeControl = false;
     }
 
-    static float EaseInQuad(float start, float distance,
-                     float elapsedTime, float duration) {
-        float clampedTime = Mathf.Min(elapsedTime / duration, 1.0f);
-        return distance * clampedTime * clampedTime + start;
+    static float EaseInQuad(float elapsedTime, float duration) {
+        float clampedTime = Mathf.Min(elapsedTime, 1.0f);
+        return clampedTime * clampedTime * clampedTime * duration;
     }
 }
