@@ -2,6 +2,9 @@
 using System.Collections;
 
 public class GameManager : MonoBehaviour {
+
+    public static GameManager instance;
+
     public int points;
     public int level;
     public float power;
@@ -13,14 +16,19 @@ public class GameManager : MonoBehaviour {
 
     void Awake() {
         DontDestroyOnLoad(transform.gameObject);
+        if (instance == null) {
+            instance = this;
+        } else {
+            DestroyImmediate(this);
+        }
+    }
+
+    // Use this for initialization
+    void Start() {
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         player = playerObject.GetComponent<Player>();
         GameObject powerMeterObj = GameObject.FindGameObjectWithTag("PowerMeter");
         powerMeter = powerMeterObj.GetComponent<PowerMeter>();
-    }
-
-	// Use this for initialization
-	void Start () {
         if (!isLevelLoaded) {
             GameObject levelFactoryObject = GameObject.FindGameObjectWithTag("LevelFactory");
             LevelFactory lf = levelFactoryObject.GetComponent<LevelFactory>();
@@ -28,12 +36,16 @@ public class GameManager : MonoBehaviour {
             isLevelLoaded = true;
         }
         meterMode();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    void OnLevelWasLoaded(int level) {
+        Start();
+    }
+
+    // Update is called once per frame
+    void Update() {
         buttonPressed = Input.anyKeyDown;
-	}
+    }
 
     public bool GetButtonPressedOnce() {
         bool temp = buttonPressed;

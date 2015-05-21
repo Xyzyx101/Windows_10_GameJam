@@ -2,7 +2,6 @@
 using System.Collections;
 
 public class PowerMeter : MonoBehaviour {
-
     private Player player;
     private SpriteRenderer spriteRender;
     private GameManager gm;
